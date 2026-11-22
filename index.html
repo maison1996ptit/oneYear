@@ -192,7 +192,7 @@
       <div class="flex items-center gap-2.5 sm:gap-5 text-xs sm:text-sm text-muted font-medium">
         <a href="#details" class="hover:text-sage transition-colors hidden sm:inline">Thông tin</a>
         <a href="#itinerary" class="hover:text-sage transition-colors">Lịch trình</a>
-        <a href="#checkin-studio" class="hover:text-sage transition-colors">Album Ảnh</a>
+        <a href="./album.html" class="hover:text-sage transition-colors font-semibold text-sage">Album Ảnh</a>
         <a href="#rsvp" class="px-3 py-1.5 rounded-full bg-sage text-cream text-xs hover:bg-sageLight transition-colors">Xác nhận</a>
         <button type="button" onclick="openHostDashboard()" title="Góc Mai Sơn — Xem xác nhận & đồng bộ" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-sage/20 bg-white/80 hover:border-terracotta text-sage text-xs transition-colors">
           <span id="nav-sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
@@ -291,8 +291,8 @@
           <a href="#itinerary" class="px-6 py-3 rounded-full bg-sage text-cream text-xs sm:text-sm font-medium tracking-wide hover:bg-sageLight transition-all shadow-md">
             Xem lịch trình 8 điểm
           </a>
-          <a href="#checkin-studio" class="px-6 py-3 rounded-full bg-cream border border-terracotta/55 text-sage text-xs sm:text-sm font-medium tracking-wide hover:bg-creamDark transition-all">
-            Album &amp; Tải Ảnh
+          <a href="./album.html" class="px-6 py-3 rounded-full bg-cream border border-terracotta/55 text-sage text-xs sm:text-sm font-medium tracking-wide hover:bg-creamDark transition-all">
+            Mở Trang Album Ảnh
           </a>
         </div>
       </div>
@@ -606,10 +606,13 @@
             <p id="album-subtitle" class="text-xs text-muted mt-1">Bấm vào từng ảnh để xem phóng to toàn màn hình &amp; trượt xem cả album.</p>
           </div>
 
-          <div class="flex items-center gap-2 self-start sm:self-auto">
+          <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
             <span id="album-count" class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-creamDark text-sage text-xs font-medium">
               0 khoảnh khắc
             </span>
+            <a href="./album.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-sage text-cream text-xs font-medium hover:bg-sageLight transition-colors">
+              <span>Mở trang Album riêng ↗</span>
+            </a>
             <button type="button" onclick="syncAllFromCloud(true)" title="Làm mới dữ liệu" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-sage/20 bg-cream text-sage text-xs hover:bg-creamDark transition-colors">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               <span>Làm mới</span>
@@ -1179,6 +1182,12 @@
     }
 
     function initScrollReveal() {
+      const elements = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        elements.forEach((el) => el.classList.add('visible'));
+        return;
+      }
+
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -1186,9 +1195,14 @@
             observer.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.06 });
+      }, { threshold: 0.01, rootMargin: '0px 0px 100px 0px' });
 
-      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+      elements.forEach((el) => observer.observe(el));
+
+      // Đảm bảo không bao giờ bị kẹt ẩn trên màn hình nhỏ
+      setTimeout(() => {
+        elements.forEach((el) => el.classList.add('visible'));
+      }, 1500);
     }
 
     /* -----------------------------------------------------------

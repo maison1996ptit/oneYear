@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Album Ảnh Kỷ Niệm 11 Tháng — Mai Sơn & Ngọc Hà (24/11/2026)</title>
+
+  <!-- Google Fonts hỗ trợ tiếng Việt đầy đủ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <!-- Cấu hình Supabase & SDK -->
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FAF6F0',
+            creamDark: '#F1E9DD',
+            sage: '#3A4D39',
+            sageLight: '#4F664E',
+            terracotta: '#C88A7D',
+            terracottaLight: '#DFB0A6',
+            ink: '#252B24',
+            muted: '#6E6A63'
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
+            display: ['"Playfair Display"', '"Cormorant Garamond"', 'serif'],
+            sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            editorial: '0 22px 55px -16px rgba(58, 77, 57, 0.14)',
+            card: '0 10px 30px -12px rgba(37, 43, 36, 0.08)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #FAF6F0;
+      color: #252B24;
+      background-image:
+        radial-gradient(rgba(58, 77, 57, 0.035) 1px, transparent 0),
+        radial-gradient(rgba(200, 138, 125, 0.045) 1px, transparent 0);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      overflow-x: hidden;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #FAF6F0; }
+    ::-webkit-scrollbar-thumb { background: #C88A7D; border-radius: 9999px; }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-terracotta/25 selection:text-sage min-h-screen flex flex-col">
+
+  <!-- Toast container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[80] flex flex-col gap-2 max-w-xs w-[calc(100%-2.5rem)] pointer-events-none"></div>
+
+  <!-- =========================================================
+       THANH ĐIỀU HƯỚNG TRANG ALBUM
+  ========================================================== -->
+  <nav class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-sage/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <a href="./index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-creamDark hover:bg-sage hover:text-cream text-sage text-xs font-medium transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          <span>Thiệp Mời</span>
+        </a>
+        <span class="font-serif text-lg sm:text-xl font-semibold text-sage">
+          Album <span class="text-terracotta italic">M&amp;H</span>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span id="sync-status-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span class="hidden sm:inline">Đang kiểm tra...</span>
+        </span>
+        <button type="button" onclick="toggleUploadPanel()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-sage text-cream text-xs font-medium hover:bg-sageLight transition-colors shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>Tải ảnh lên</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       HEADER TRANG ALBUM
+  ========================================================== -->
+  <header class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-8 pb-6">
+    <div class="relative bg-white/85 border border-terracotta/35 rounded-3xl p-6 sm:p-10 shadow-editorial overflow-hidden text-center">
+      <div class="pointer-events-none absolute inset-3 border border-sage/12 rounded-2xl"></div>
+      <div class="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full bg-terracotta/15 blur-2xl"></div>
+      <div class="pointer-events-none absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-sage/10 blur-2xl"></div>
+
+      <div class="relative z-10 max-w-2xl mx-auto">
+        <p class="text-[11px] uppercase tracking-[0.3em] text-terracotta font-medium mb-2">11 Months of Us • 24.11.2026</p>
+        <h1 class="font-display text-3xl sm:text-5xl text-sage font-medium">Album Kỷ Niệm Mai Sơn &amp; Ngọc Hà</h1>
+        <p class="text-sm text-muted font-light mt-2.5 leading-relaxed">
+          Nơi lưu giữ trọn vẹn những bức ảnh hẹn hò của hai đứa mình. Cả hai đều có thể tải nhiều ảnh lên cùng lúc, xem trình chiếu toàn màn hình và đồng bộ trực tiếp giữa hai máy.
+        </p>
+
+        <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+          <span id="hero-photo-count" class="px-4 py-1.5 rounded-full bg-creamDark text-sage text-xs font-medium">0 khoảnh khắc</span>
+          <button type="button" onclick="startSlideshow()" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-terracotta/50 bg-cream text-sage text-xs font-medium hover:bg-creamDark transition-colors">
+            <svg class="w-3.5 h-3.5 text-terracotta" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>Trình chiếu Slideshow</span>
+          </button>
+          <a href="./index.html#checkin-studio" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-sage/20 bg-white text-muted hover:text-sage text-xs font-medium transition-colors">
+            <span>Ghép khung PNG tạp chí →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       KHU VỰC TẢI NHIỀU ẢNH LÊN ALBUM
+  ========================================================== -->
+  <section id="upload-panel" class="max-w-6xl w-full mx-auto px-4 sm:px-6 pb-8">
+    <div class="bg-white/90 border border-sage/15 rounded-3xl p-5 sm:p-8 shadow-card">
+      <div class="flex items-center justify-between gap-2 mb-5">
+        <div>
+          <h2 class="font-display text-xl sm:text-2xl text-sage font-medium">Tải ảnh mới lên Album</h2>
+          <p class="text-xs text-muted mt-0.5">Chọn nhiều ảnh từ điện thoại hoặc máy tính cùng lúc — ảnh tự động nén nhẹ để tải cực nhanh.</p>
+        </div>
+        <button type="button" onclick="toggleUploadPanel()" class="text-xs text-muted hover:text-sage underline">Thu gọn</button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Khu vực chọn nhiều ảnh -->
+        <div class="lg:col-span-7 space-y-4">
+          <div id="batch-drop-zone" class="relative border-2 border-dashed border-terracotta/55 hover:border-sage bg-cream/80 rounded-2xl p-7 text-center cursor-pointer transition-all group">
+            <input id="batch-photo-input" type="file" accept="image/*" multiple class="hidden" />
+            <div class="w-14 h-14 rounded-full bg-creamDark text-sage mx-auto flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </div>
+            <p class="text-sm sm:text-base font-medium text-sage">Chạm để chọn nhiều ảnh hoặc kéo thả vào đây</p>
+            <p class="text-xs text-muted mt-1">Hỗ trợ JPG, PNG, WEBP • Có thể chọn 5–20 ảnh một lượt</p>
+          </div>
+
+          <div id="batch-queue-wrapper" class="hidden bg-cream/70 border border-sage/12 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span id="batch-queue-title" class="text-xs font-semibold uppercase tracking-[0.16em] text-sage">Đã chọn 0 ảnh</span>
+              <button type="button" onclick="clearBatchQueue()" class="text-xs text-terracotta hover:text-sage underline">Xóa danh sách</button>
+            </div>
+            <div id="batch-preview-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+        <!-- Thông tin ảnh -->
+        <div class="lg:col-span-5 bg-cream/70 border border-sage/12 rounded-2xl p-5 space-y-4">
+          <div>
+            <label for="batch-location-select" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-1.5">Địa điểm / Chủ đề</label>
+            <select id="batch-location-select" class="w-full rounded-xl border border-sage/20 bg-white px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-terracotta/50"></select>
+          </div>
+
+          <div>
+            <label for="batch-uploader-select" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-1.5">Người đăng ảnh</label>
+            <select id="batch-uploader-select" class="w-full rounded-xl border border-sage/20 bg-white px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-terracotta/50">
+              <option value="Mai Sơn & Ngọc Hà">Mai Sơn &amp; Ngọc Hà</option>
+              <option value="Ngọc Hà">Ngọc Hà</option>
+              <option value="Mai Sơn">Mai Sơn</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="batch-caption-input" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-1.5">Ghi chú kỷ niệm (không bắt buộc)</label>
+            <input id="batch-caption-input" type="text" maxlength="100" placeholder="VD: Buổi chiều thật bình yên bên nhau..." class="w-full rounded-xl border border-sage/20 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-terracotta/50" />
+          </div>
+
+          <div>
+            <label for="batch-frame-select" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-1.5">Kiểu hiển thị thẻ ảnh</label>
+            <select id="batch-frame-select" class="w-full rounded-xl border border-sage/20 bg-white px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-terracotta/50">
+              <option value="none">Ảnh gốc tinh gọn (Gallery)</option>
+              <option value="polaroid">Khung Polaroid Cổ Điển</option>
+              <option value="editorial">Khung Tạp Chí Xanh Rêu</option>
+              <option value="anniversary">Khung Kỷ Niệm 11 Tháng</option>
+            </select>
+          </div>
+
+          <div id="batch-upload-progress" class="hidden space-y-1.5">
+            <div class="flex justify-between text-xs text-sage font-medium">
+              <span id="batch-progress-label">Đang tải ảnh lên...</span>
+              <span id="batch-progress-pct">0%</span>
+            </div>
+            <div class="w-full h-2 bg-creamDark rounded-full overflow-hidden">
+              <div id="batch-progress-bar" class="h-full bg-gradient-to-r from-sage to-terracotta transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <button id="batch-upload-btn" type="button" onclick="uploadBatchPhotos()" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-sage text-cream text-sm font-medium hover:bg-sageLight disabled:opacity-55 transition-all shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V3m0 0l-4 4m4-4l4 4"/></svg>
+            <span id="batch-upload-btn-text">Tải ảnh lên Album chung</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       THƯ VIỆN ALBUM ẢNH
+  ========================================================== -->
+  <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 pb-20 flex-1">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div id="album-filters" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+
+      <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+        <select id="sort-select" onchange="renderAlbum()" class="rounded-full border border-sage/20 bg-white px-3 py-1.5 text-xs text-sage focus:outline-none">
+          <option value="newest">Mới nhất trước</option>
+          <option value="oldest">Cũ nhất trước</option>
+        </select>
+        <button type="button" onclick="loadAlbumFromCloud(true)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-sage/20 bg-white hover:bg-creamDark text-sage text-xs transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Làm mới</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="album-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <div id="album-empty" class="text-center py-16 px-4 rounded-3xl bg-white/80 border border-dashed border-sage/20">
+      <svg class="w-12 h-12 mx-auto text-terracotta/70 mb-3" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <p class="font-serif italic text-2xl text-sage">Album đang chờ những bức ảnh đầu tiên</p>
+      <p class="text-xs text-muted mt-1.5">Hãy chọn ảnh ở khung tải lên phía trên để lưu lại kỷ niệm của Mai Sơn &amp; Ngọc Hà nhé!</p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-sage/10 py-6 text-center text-xs text-muted px-4">
+    <p class="font-serif italic text-base text-sage">Mai Sơn &amp; Ngọc Hà — Album 11 Months of Us</p>
+  </footer>
+
+  <!-- =========================================================
+       LIGHTBOX / SLIDESHOW TOÀN MÀN HÌNH
+  ========================================================== -->
+  <div id="lightbox-modal" class="hidden fixed inset-0 z-[65] bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6">
+    <div class="flex items-center justify-between text-cream/90 max-w-5xl w-full mx-auto gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span id="lb-counter" class="px-3 py-1 rounded-full bg-white/10 text-xs font-medium tracking-wider shrink-0">1 / 1</span>
+        <span id="lb-location" class="text-xs sm:text-sm uppercase tracking-[0.16em] text-terracottaLight font-medium truncate"></span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="lb-play-btn" type="button" onclick="toggleSlideshowTimer()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs text-white transition-colors">
+          <span id="lb-play-label">▶ Tự chạy</span>
+        </button>
+        <button type="button" onclick="downloadCurrentLightboxPhoto()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs text-white transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+          <span class="hidden sm:inline">Tải ảnh</span>
+        </button>
+        <button type="button" onclick="closeLightbox()" aria-label="Đóng" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="lb-stage" class="relative flex-1 flex items-center justify-center my-4 select-none overflow-hidden">
+      <button type="button" onclick="navigateLightbox(-1)" aria-label="Ảnh trước" class="absolute left-1 sm:left-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <img id="lb-img" src="" alt="Ảnh kỷ niệm" class="max-h-[72vh] max-w-[90vw] sm:max-w-[82vw] object-contain rounded-2xl shadow-2xl" />
+      <button type="button" onclick="navigateLightbox(1)" aria-label="Ảnh tiếp theo" class="absolute right-1 sm:right-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="max-w-3xl w-full mx-auto text-center text-cream/90 pb-1">
+      <p id="lb-caption" class="font-serif italic text-xl sm:text-2xl text-cream"></p>
+      <p id="lb-meta" class="text-[11px] uppercase tracking-[0.18em] text-cream/60 mt-1.5"></p>
+    </div>
+  </div>
+
+  <!-- MODAL XÁC NHẬN XÓA ẢNH -->
+  <div id="confirm-delete-modal" onclick="if(event.target === this) closeDeleteModal()" class="hidden fixed inset-0 z-[75] bg-ink/55 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-cream border border-terracotta/40 rounded-2xl max-w-sm w-full p-6 shadow-editorial text-center">
+      <h4 class="font-serif text-2xl text-sage font-semibold">Xóa ảnh khỏi Album?</h4>
+      <p class="text-xs text-muted mt-2 leading-relaxed">Ảnh này sẽ bị xóa khỏi Album chung của hai bạn. Bạn chắc chắn muốn xóa chứ?</p>
+      <div class="mt-5 flex gap-2.5 justify-center">
+        <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-sage/20 bg-white text-sage text-xs font-medium hover:bg-creamDark transition-colors">Hủy bỏ</button>
+        <button id="confirm-delete-ok" type="button" class="flex-1 px-4 py-2.5 rounded-xl bg-[#8B3A3A] text-white text-xs font-medium hover:opacity-90 transition-opacity">Xóa ảnh</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_LOCATION = 'Khoảnh khắc chung 24/11';
+    const LOCATIONS = [
+      DEFAULT_LOCATION,
+      'Dinh Độc Lập',
+      'Bưu điện Trung tâm & Đường sách TP.HCM',
+      'Ăn trưa chay tại Quán Chay Nhà',
+      'Bảo tàng Mỹ thuật TP.HCM',
+      'Nghỉ chân & cà phê tại Soo Kafe Bến Thành',
+      'Ngắm hoàng hôn tại Công viên Bến Bạch Đằng',
+      'Ăn tối chay tại 21Grams Vegetarian',
+      'Dạo mát Phố Đi Bộ Nguyễn Huệ'
+    ];
+
+    const STORAGE_KEY_ALBUM = 'ms_nh_11m_24112026_album';
+    const APP_CFG = window.APP_CONFIG || {};
+    const STORAGE_BUCKET = APP_CFG.STORAGE_BUCKET || 'anniversary-album';
+
+    let supabaseClient = null;
+    let isCloudEnabled = false;
+    let isUploadingPhotos = false;
+
+    let albumPhotos = loadJSON(STORAGE_KEY_ALBUM, []);
+    let batchQueue = [];
+    let activeFilter = 'ALL';
+
+    let lightboxList = [];
+    let lightboxIndex = 0;
+    let slideshowTimer = null;
+    let pendingDeleteId = null;
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+        return true;
+      } catch (e) {
+        showToast('Bộ nhớ trình duyệt đã đầy, hãy kiểm tra kết nối Supabase nhé!', 'error');
+        return false;
+      }
+    }
+
+    function escapeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatDateTimeVN(iso) {
+      if (!iso) return '24/11/2026';
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return String(iso);
+      return `${d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} • ${d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error' ? 'bg-[#8B3A3A] text-white' : 'bg-sage text-cream border border-terracottaLight/40';
+      toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2.5 transform translate-y-3 opacity-0 transition-all duration-300 ${bgClass}`;
+      toast.innerHTML = `<span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-200' : 'bg-terracottaLight'} shrink-0"></span><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-3', 'opacity-0'));
+      setTimeout(() => {
+        toast.classList.add('translate-y-3', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    function initSupabase() {
+      const url = (APP_CFG.SUPABASE_URL || '').trim();
+      const key = (APP_CFG.SUPABASE_ANON_KEY || '').trim();
+      if (url.startsWith('https://') && key.length > 20 && window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(url, key);
+          isCloudEnabled = true;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      const pill = document.getElementById('sync-status-pill');
+      if (isCloudEnabled) {
+        pill.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium';
+        pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span class="hidden sm:inline">Đồng bộ trực tuyến</span>';
+      } else {
+        pill.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium';
+        pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span class="hidden sm:inline">Chế độ nội bộ</span>';
+      }
+    }
+
+    async function loadAlbumFromCloud(showNotice = false) {
+      if (!isCloudEnabled) {
+        renderAlbum();
+        if (showNotice) showToast('Đang ở chế độ nội bộ.');
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient
+          .from('album_photos')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(300);
+        if (error) throw error;
+
+        albumPhotos = (data || []).map((row) => ({
+          id: row.id,
+          image: row.image_url,
+          storagePath: row.storage_path || '',
+          location: row.location || DEFAULT_LOCATION,
+          caption: row.caption || '',
+          frame: row.frame || 'none',
+          uploadedBy: row.uploaded_by || 'Mai Sơn & Ngọc Hà',
+          createdAtIso: row.created_at,
+          createdAt: formatDateTimeVN(row.created_at)
+        }));
+        renderAlbum();
+        if (showNotice) showToast('Đã cập nhật Album mới nhất!');
+      } catch (err) {
+        console.error('Lỗi tải Album:', err);
+        if (showNotice) showToast('Chưa tải được Album — hãy đảm bảo đã chạy supabase-setup.sql!', 'error');
+      }
+    }
+
+    function subscribeRealtime() {
+      if (!isCloudEnabled) return;
+      supabaseClient
+        .channel('album-page-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'album_photos' }, () => {
+          if (!isUploadingPhotos) loadAlbumFromCloud(false);
+        })
+        .subscribe();
+    }
+
+    function toggleUploadPanel() {
+      const panel = document.getElementById('upload-panel');
+      panel.classList.toggle('hidden');
+      if (!panel.classList.contains('hidden')) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function initUploadControls() {
+      const locSelect = document.getElementById('batch-location-select');
+      LOCATIONS.forEach((loc) => {
+        const opt = document.createElement('option');
+        opt.value = loc;
+        opt.textContent = loc === DEFAULT_LOCATION ? `✨ ${loc}` : loc;
+        locSelect.appendChild(opt);
+      });
+
+      const dropZone = document.getElementById('batch-drop-zone');
+      const input = document.getElementById('batch-photo-input');
+      dropZone.addEventListener('click', () => input.click());
+      input.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          addFilesToBatchQueue(Array.from(e.target.files));
+          input.value = '';
+        }
+      });
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-sage', 'bg-creamDark');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-sage', 'bg-creamDark');
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-sage', 'bg-creamDark');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          addFilesToBatchQueue(Array.from(e.dataTransfer.files));
+        }
+      });
+    }
+
+    function addFilesToBatchQueue(files) {
+      const valid = files.filter((f) => f.type.startsWith('image/'));
+      if (valid.length === 0) {
+        showToast('Vui lòng chọn tệp ảnh hợp lệ (JPG, PNG, WEBP).', 'error');
+        return;
+      }
+      valid.forEach((file) => {
+        batchQueue.push({
+          id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+          file,
+          previewUrl: URL.createObjectURL(file)
+        });
+      });
+      renderBatchQueue();
+      showToast(`Đã chọn ${valid.length} ảnh sẵn sàng tải lên!`);
+    }
+
+    function removeFromBatchQueue(id) {
+      const idx = batchQueue.findIndex((x) => x.id === id);
+      if (idx !== -1) {
+        URL.revokeObjectURL(batchQueue[idx].previewUrl);
+        batchQueue.splice(idx, 1);
+      }
+      renderBatchQueue();
+    }
+
+    function clearBatchQueue() {
+      batchQueue.forEach((x) => URL.revokeObjectURL(x.previewUrl));
+      batchQueue = [];
+      renderBatchQueue();
+    }
+
+    function renderBatchQueue() {
+      const wrap = document.getElementById('batch-queue-wrapper');
+      const grid = document.getElementById('batch-preview-grid');
+      const title = document.getElementById('batch-queue-title');
+      const btnText = document.getElementById('batch-upload-btn-text');
+
+      if (batchQueue.length === 0) {
+        wrap.classList.add('hidden');
+        btnText.textContent = 'Tải ảnh lên Album chung';
+        return;
+      }
+      wrap.classList.remove('hidden');
+      title.textContent = `Đã chọn ${batchQueue.length} ảnh`;
+      btnText.textContent = `Tải ${batchQueue.length} ảnh lên Album chung`;
+
+      grid.innerHTML = batchQueue.map((item) => `
+        <div class="relative aspect-square rounded-xl overflow-hidden bg-creamDark border border-sage/10">
+          <img src="${item.previewUrl}" alt="Xem trước" class="w-full h-full object-cover" />
+          <button type="button" onclick="removeFromBatchQueue('${item.id}')" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/65 hover:bg-red-600 text-white flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function loadImageFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function compressToCanvas(img, maxDim) {
+      const c = document.createElement('canvas');
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      c.width = w;
+      c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      return c;
+    }
+
+    async function persistPhoto({ img, location, caption, frame, uploadedBy }) {
+      if (isCloudEnabled) {
+        const blob = await new Promise((res) => compressToCanvas(img, 1600).toBlob(res, 'image/jpeg', 0.85));
+        const path = `24-11-2026/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
+        const { error: upErr } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .upload(path, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
+        if (upErr) throw upErr;
+
+        const { data: pub } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+
+        const { data: row, error: dbErr } = await supabaseClient
+          .from('album_photos')
+          .insert({
+            image_url: pub.publicUrl,
+            storage_path: path,
+            location,
+            caption,
+            frame,
+            uploaded_by: uploadedBy
+          })
+          .select()
+          .single();
+        if (dbErr) throw dbErr;
+
+        return {
+          id: row.id,
+          image: row.image_url,
+          storagePath: row.storage_path,
+          location: row.location,
+          caption: row.caption,
+          frame: row.frame,
+          uploadedBy: row.uploaded_by,
+          createdAtIso: row.created_at,
+          createdAt: formatDateTimeVN(row.created_at)
+        };
+      }
+
+      const nowIso = new Date().toISOString();
+      const entry = {
+        id: 'photo_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        image: compressToCanvas(img, 820).toDataURL('image/jpeg', 0.75),
+        storagePath: '',
+        location,
+        caption,
+        frame,
+        uploadedBy,
+        createdAtIso: nowIso,
+        createdAt: formatDateTimeVN(nowIso)
+      };
+      if (!saveJSON(STORAGE_KEY_ALBUM, [entry, ...albumPhotos])) throw new Error('LOCAL_FULL');
+      return entry;
+    }
+
+    async function uploadBatchPhotos() {
+      if (batchQueue.length === 0) {
+        showToast('Hãy chọn ít nhất 1 ảnh trước khi tải lên nhé!', 'error');
+        return;
+      }
+
+      const location = document.getElementById('batch-location-select').value;
+      const uploadedBy = document.getElementById('batch-uploader-select').value;
+      const caption = document.getElementById('batch-caption-input').value.trim();
+      const frame = document.getElementById('batch-frame-select').value;
+
+      const btn = document.getElementById('batch-upload-btn');
+      const wrap = document.getElementById('batch-upload-progress');
+      const label = document.getElementById('batch-progress-label');
+      const pctEl = document.getElementById('batch-progress-pct');
+      const bar = document.getElementById('batch-progress-bar');
+
+      btn.disabled = true;
+      isUploadingPhotos = true;
+      wrap.classList.remove('hidden');
+
+      const snapshot = [...batchQueue];
+      let ok = 0;
+
+      for (let i = 0; i < snapshot.length; i++) {
+        const pct = Math.round((i / snapshot.length) * 100);
+        label.textContent = `Đang tải ảnh ${i + 1} / ${snapshot.length}...`;
+        pctEl.textContent = `${pct}%`;
+        bar.style.width = `${Math.max(pct, 8)}%`;
+
+        try {
+          const img = await loadImageFromFile(snapshot[i].file);
+          const saved = await persistPhoto({ img, location, caption, frame, uploadedBy });
+          if (!albumPhotos.some((p) => p.id === saved.id)) albumPhotos.unshift(saved);
+          ok++;
+        } catch (err) {
+          console.error('Lỗi upload:', err);
+          if (err && err.message === 'LOCAL_FULL') break;
+        }
+      }
+
+      bar.style.width = '100%';
+      pctEl.textContent = '100%';
+      label.textContent = `Hoàn tất ${ok} / ${snapshot.length} ảnh!`;
+
+      clearBatchQueue();
+      document.getElementById('batch-caption-input').value = '';
+      renderAlbum();
+
+      setTimeout(() => {
+        wrap.classList.add('hidden');
+        bar.style.width = '0%';
+        btn.disabled = false;
+        isUploadingPhotos = false;
+      }, 900);
+
+      if (ok > 0) {
+        showToast(`Đã tải thành công ${ok} ảnh lên Album!`);
+      } else {
+        showToast('Không tải được ảnh — hãy kiểm tra bạn đã chạy supabase-setup.sql chưa nhé!', 'error');
+      }
+    }
+
+    function getDisplayPhotos() {
+      let list = activeFilter === 'ALL'
+        ? [...albumPhotos]
+        : albumPhotos.filter((p) => p.location === activeFilter);
+      const sortVal = document.getElementById('sort-select').value;
+      if (sortVal === 'oldest') list.reverse();
+      return list;
+    }
+
+    function setFilter(loc) {
+      activeFilter = loc;
+      renderAlbum();
+    }
+
+    function renderAlbum() {
+      const grid = document.getElementById('album-grid');
+      const empty = document.getElementById('album-empty');
+      const filterBar = document.getElementById('album-filters');
+      document.getElementById('hero-photo-count').textContent = `${albumPhotos.length} khoảnh khắc`;
+
+      const uniqueLocs = Array.from(new Set(albumPhotos.map((p) => p.location).filter(Boolean)));
+      if (activeFilter !== 'ALL' && !uniqueLocs.includes(activeFilter)) activeFilter = 'ALL';
+
+      const btnAllCls = activeFilter === 'ALL'
+        ? 'shrink-0 px-3.5 py-1.5 rounded-full bg-sage text-cream text-xs font-medium shadow-sm'
+        : 'shrink-0 px-3.5 py-1.5 rounded-full bg-white border border-sage/15 text-sage text-xs hover:bg-creamDark transition-colors';
+
+      filterBar.innerHTML = `<button type="button" onclick="setFilter('ALL')" class="${btnAllCls}">Tất cả (${albumPhotos.length})</button>` +
+        uniqueLocs.map((loc) => {
+          const count = albumPhotos.filter((p) => p.location === loc).length;
+          const active = activeFilter === loc;
+          const cls = active
+            ? 'shrink-0 px-3.5 py-1.5 rounded-full bg-sage text-cream text-xs font-medium shadow-sm'
+            : 'shrink-0 px-3.5 py-1.5 rounded-full bg-white border border-sage/15 text-sage text-xs hover:bg-creamDark transition-colors';
+          return `<button type="button" data-loc="${escapeHTML(loc)}" onclick="setFilter(this.dataset.loc)" class="${cls}">${escapeHTML(loc)} (${count})</button>`;
+        }).join('');
+
+      const list = getDisplayPhotos();
+      grid.innerHTML = '';
+
+      if (list.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      list.forEach((item, idx) => {
+        const isDark = item.frame === 'editorial';
+        const isAnniv = item.frame === 'anniversary';
+        const isClean = item.frame === 'none';
+
+        const card = document.createElement('div');
+        card.className = `relative rounded-2xl overflow-hidden shadow-card transition-transform hover:-translate-y-1 flex flex-col ${
+          isDark
+            ? 'bg-sage text-cream border border-terracottaLight/50 p-3.5 pb-4'
+            : isAnniv
+              ? 'bg-cream border-2 border-terracotta/70 p-3.5 pb-4'
+              : isClean
+                ? 'bg-white border border-sage/12 p-2.5 pb-3.5'
+                : 'bg-white border border-sage/12 p-3.5 pb-4'
+        }`;
+
+        const safeLoc = escapeHTML(item.location || DEFAULT_LOCATION);
+        const safeCap = escapeHTML(item.caption || '');
+        const safeBy = escapeHTML(item.uploadedBy || 'Mai Sơn & Ngọc Hà');
+        const safeTime = escapeHTML(item.createdAt || '24.11.2026');
+
+        card.innerHTML = `
+          <div class="relative aspect-[4/4.2] rounded-xl overflow-hidden bg-creamDark mb-3 group cursor-zoom-in" onclick="openLightbox(${idx})">
+            <img src="${escapeHTML(item.image)}" alt="${safeLoc}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5" onclick="event.stopPropagation()">
+              <button type="button" onclick="downloadAlbumPhoto('${escapeHTML(item.id)}')" title="Tải ảnh về" class="w-8 h-8 rounded-full bg-black/50 hover:bg-sage text-white flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+              </button>
+              <button type="button" onclick="requestDelete('${escapeHTML(item.id)}')" title="Xóa ảnh" class="w-8 h-8 rounded-full bg-black/50 hover:bg-red-600 text-white flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <span class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-sm text-white text-[10px]">${safeTime}</span>
+          </div>
+          <div class="text-center px-1 flex-1 flex flex-col justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.18em] ${isDark ? 'text-terracottaLight' : 'text-terracotta'} font-semibold truncate">${safeLoc}</p>
+              ${safeCap ? `<p class="font-serif italic text-lg ${isDark ? 'text-cream' : 'text-sage'} mt-0.5 line-clamp-2">“${safeCap}”</p>` : ''}
+            </div>
+            <p class="text-[9px] uppercase tracking-[0.16em] ${isDark ? 'text-cream/65' : 'text-muted'} mt-2">${safeBy} • 11 Months</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function requestDelete(id) {
+      pendingDeleteId = id;
+      document.getElementById('confirm-delete-modal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      document.getElementById('confirm-delete-modal').classList.add('hidden');
+    }
+
+    async function executeDelete() {
+      if (!pendingDeleteId) return;
+      const target = albumPhotos.find((p) => p.id === pendingDeleteId);
+      const id = pendingDeleteId;
+      closeDeleteModal();
+
+      if (isCloudEnabled && target) {
+        try {
+          const { error } = await supabaseClient.from('album_photos').delete().eq('id', id);
+          if (error) throw error;
+          if (target.storagePath) {
+            await supabaseClient.storage.from(STORAGE_BUCKET).remove([target.storagePath]);
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Không thể xóa ảnh, bạn thử lại nhé!', 'error');
+          return;
+        }
+      }
+
+      albumPhotos = albumPhotos.filter((p) => p.id !== id);
+      if (!isCloudEnabled) saveJSON(STORAGE_KEY_ALBUM, albumPhotos);
+      renderAlbum();
+      showToast('Đã xóa ảnh khỏi Album.');
+    }
+
+    async function downloadByUrl(url, filename) {
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const objUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objUrl;
+        a.download = filename;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
+        showToast('Đang tải ảnh về máy...');
+      } catch (e) {
+        window.open(url, '_blank', 'noopener');
+      }
+    }
+
+    function downloadAlbumPhoto(id) {
+      const item = albumPhotos.find((p) => p.id === id);
+      if (item) downloadByUrl(item.image, `Album-11Thang-${Date.now()}.jpg`);
+    }
+
+    /* --- Lightbox & Slideshow --- */
+    function openLightbox(index) {
+      lightboxList = getDisplayPhotos();
+      if (lightboxList.length === 0) return;
+      lightboxIndex = Math.max(0, Math.min(index, lightboxList.length - 1));
+      updateLightbox();
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function startSlideshow() {
+      if (getDisplayPhotos().length === 0) {
+        showToast('Chưa có ảnh nào trong Album để trình chiếu!', 'error');
+        return;
+      }
+      openLightbox(0);
+      if (!slideshowTimer) toggleSlideshowTimer();
+    }
+
+    function toggleSlideshowTimer() {
+      const label = document.getElementById('lb-play-label');
+      if (slideshowTimer) {
+        clearInterval(slideshowTimer);
+        slideshowTimer = null;
+        label.textContent = '▶ Tự chạy';
+      } else {
+        slideshowTimer = setInterval(() => navigateLightbox(1), 3500);
+        label.textContent = '⏸ Tạm dừng';
+      }
+    }
+
+    function closeLightbox() {
+      if (slideshowTimer) {
+        clearInterval(slideshowTimer);
+        slideshowTimer = null;
+        document.getElementById('lb-play-label').textContent = '▶ Tự chạy';
+      }
+      document.getElementById('lightbox-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function navigateLightbox(delta) {
+      if (lightboxList.length === 0) return;
+      lightboxIndex = (lightboxIndex + delta + lightboxList.length) % lightboxList.length;
+      updateLightbox();
+    }
+
+    function updateLightbox() {
+      const item = lightboxList[lightboxIndex];
+      if (!item) return;
+      document.getElementById('lb-img').src = item.image;
+      document.getElementById('lb-counter').textContent = `${lightboxIndex + 1} / ${lightboxList.length}`;
+      document.getElementById('lb-location').textContent = item.location || DEFAULT_LOCATION;
+      document.getElementById('lb-caption').textContent = item.caption ? `“${item.caption}”` : '';
+      document.getElementById('lb-meta').textContent = `${item.uploadedBy || 'Mai Sơn & Ngọc Hà'} • ${item.createdAt || '24.11.2026'}`;
+    }
+
+    function downloadCurrentLightboxPhoto() {
+      const item = lightboxList[lightboxIndex];
+      if (item) downloadByUrl(item.image, `KyNiem-11Thang-${lightboxIndex + 1}.jpg`);
+    }
+
+    function initLightboxControls() {
+      let startX = 0;
+      const stage = document.getElementById('lb-stage');
+      stage.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].screenX; }, { passive: true });
+      stage.addEventListener('touchend', (e) => {
+        const diff = e.changedTouches[0].screenX - startX;
+        if (Math.abs(diff) > 45) navigateLightbox(diff > 0 ? -1 : 1);
+      }, { passive: true });
+
+      document.addEventListener('keydown', (e) => {
+        if (document.getElementById('lightbox-modal').classList.contains('hidden')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigateLightbox(-1);
+        if (e.key === 'ArrowRight') navigateLightbox(1);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSupabase();
+      initUploadControls();
+      initLightboxControls();
+      document.getElementById('confirm-delete-ok').addEventListener('click', executeDelete);
+      renderAlbum();
+      if (isCloudEnabled) {
+        loadAlbumFromCloud(false);
+        subscribeRealtime();
+      }
+    });
+  </script>
+</body>
+</html>
