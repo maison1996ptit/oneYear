@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>11 Months of Us — Thiệp Mời Hẹn Hò 24/11/2026 | Mai Sơn & Ngọc Hà</title>
+
+  <!-- Google Fonts hỗ trợ tiếng Việt đầy đủ: Serif tạp chí & Sans-serif hiện đại -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FAF6F0',
+            creamDark: '#F1E9DD',
+            sage: '#3A4D39',
+            sageLight: '#4F664E',
+            terracotta: '#C88A7D',
+            terracottaLight: '#DFB0A6',
+            ink: '#252B24',
+            muted: '#6E6A63'
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
+            display: ['"Playfair Display"', '"Cormorant Garamond"', 'serif'],
+            sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            editorial: '0 22px 55px -16px rgba(58, 77, 57, 0.14)',
+            card: '0 10px 30px -12px rgba(37, 43, 36, 0.08)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Nền giấy kem ấm kiểu tạp chí nghệ thuật */
+    body {
+      background-color: #FAF6F0;
+      color: #252B24;
+      background-image:
+        radial-gradient(rgba(58, 77, 57, 0.035) 1px, transparent 0),
+        radial-gradient(rgba(200, 138, 125, 0.045) 1px, transparent 0);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      overflow-x: hidden;
+    }
+
+    /* Hiệu ứng xuất hiện mượt khi cuộn trang */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hiệu ứng mở phong bì thư lãng mạn */
+    #envelope-overlay {
+      transition: opacity 0.85s ease, visibility 0.85s ease;
+    }
+    #envelope-overlay.opened {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .envelope-flap {
+      transform-origin: top center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .envelope-container.opening .envelope-flap {
+      transform: rotateX(180deg);
+    }
+    .envelope-letter {
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+    }
+    .envelope-container.opening .envelope-letter {
+      transform: translateY(-54px);
+    }
+    .wax-seal {
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .envelope-container.opening .wax-seal {
+      transform: scale(0.55);
+      opacity: 0;
+    }
+
+    /* Canvas hiệu ứng cánh hoa rơi khi nhấn RSVP */
+    #celebration-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    /* Thanh cuộn tinh tế */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF6F0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C88A7D;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-terracotta/25 selection:text-sage">
+
+  <!-- Canvas hiệu ứng cánh hoa rơi -->
+  <canvas id="celebration-canvas"></canvas>
+
+  <!-- Container hiển thị thông báo Toast (thay thế hoàn toàn alert) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-xs w-[calc(100%-2.5rem)] pointer-events-none"></div>
+
+  <!-- =========================================================
+       1. MÀN HÌNH MỞ ĐẦU (ENVELOPE OVERLAY)
+  ========================================================== -->
+  <div id="envelope-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-cream px-4">
+    <div class="text-center mb-8">
+      <p class="text-xs uppercase tracking-[0.35em] text-terracotta font-medium mb-2">Thiệp Mời Hẹn Hò Đặc Biệt</p>
+      <h2 class="font-serif text-3xl sm:text-4xl text-sage italic">Gửi Ngọc Hà thương mến</h2>
+    </div>
+
+    <!-- Phong bì thư tương tác -->
+    <div id="envelope-box" class="envelope-container relative w-full max-w-sm sm:max-w-md aspect-[16/11] cursor-pointer group" onclick="openEnvelope()">
+      <!-- Thân phong bì sau -->
+      <div class="absolute inset-0 bg-[#EFE6DA] rounded-2xl shadow-editorial border border-terracotta/35 overflow-hidden">
+        <!-- Tấm thiệp bên trong phong bì -->
+        <div class="envelope-letter absolute inset-x-6 top-6 bottom-6 bg-cream rounded-xl border border-sage/15 flex flex-col items-center justify-center p-4 text-center shadow-sm">
+          <span class="text-[10px] uppercase tracking-[0.3em] text-terracotta">11 Months of Us</span>
+          <p class="font-serif text-2xl sm:text-3xl text-sage mt-1">Mai Sơn &amp; Ngọc Hà</p>
+          <p class="text-xs text-muted mt-1 tracking-widest">24.11.2026 &nbsp;|&nbsp; 10:00 – 20:00</p>
+        </div>
+
+        <!-- Nếp gấp đáy phong bì -->
+        <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, transparent 49.5%, rgba(200,138,125,0.2) 50%, #F4ECE1 50.5%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(225deg, transparent 49.5%, rgba(200,138,125,0.2) 50%, #F7F0E6 50.5%);"></div>
+      </div>
+
+      <!-- Nắp phong bì trên -->
+      <div class="envelope-flap absolute inset-x-0 top-0 h-1/2 pointer-events-none z-10">
+        <svg viewBox="0 0 400 140" preserveAspectRatio="none" class="w-full h-full drop-shadow-sm">
+          <path d="M0,12 Q0,0 12,0 L388,0 Q400,0 400,12 L200,132 Z" fill="#EAE0D2" stroke="#C88A7D" stroke-opacity="0.4" stroke-width="1.5" />
+        </svg>
+      </div>
+
+      <!-- Con dấu sáp kỷ niệm số 11 -->
+      <div class="wax-seal absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+        <div class="w-16 h-16 sm:w-[70px] sm:h-[70px] rounded-full bg-sage text-cream flex flex-col items-center justify-center shadow-lg border-2 border-terracottaLight/80 group-hover:scale-105 transition-transform">
+          <span class="font-serif text-2xl sm:text-3xl font-semibold leading-none">11</span>
+          <span class="text-[8px] uppercase tracking-widest text-terracottaLight mt-0.5">Months</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <p class="text-xs tracking-[0.25em] uppercase text-muted mb-4">Mai Sơn &amp; Ngọc Hà &bull; 24.11.2026</p>
+      <button type="button" onclick="openEnvelope()" class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-sage text-cream text-xs uppercase tracking-[0.22em] hover:bg-sageLight transition-colors shadow-md">
+        <span>Chạm để mở thiệp</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       THANH ĐIỀU HƯỚNG NHANH (STICKY NAV)
+  ========================================================== -->
+  <nav class="sticky top-0 z-40 bg-cream/85 backdrop-blur-md border-b border-sage/10">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="#hero" class="font-serif text-xl font-semibold text-sage tracking-wide">
+        M<span class="text-terracotta italic">&amp;</span>H <span class="text-xs font-sans font-normal text-muted ml-1 hidden sm:inline">• 24.11.2026</span>
+      </a>
+      <div class="flex items-center gap-3 sm:gap-7 text-xs sm:text-sm text-muted font-medium">
+        <a href="#details" class="hover:text-sage transition-colors">Thông tin</a>
+        <a href="#itinerary" class="hover:text-sage transition-colors">Lịch trình</a>
+        <a href="#checkin-studio" class="hover:text-sage transition-colors">Check-in Ảnh</a>
+        <a href="#rsvp" class="px-3.5 py-1.5 rounded-full bg-sage text-cream text-xs hover:bg-sageLight transition-colors">Xác nhận</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       2. PHẦN HERO & BỘ ĐẾM NGƯỢC (COUNTDOWN)
+  ========================================================== -->
+  <header id="hero" class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-14 sm:pt-16 sm:pb-20">
+    <div class="relative bg-white/80 backdrop-blur-sm border border-terracotta/35 rounded-3xl p-6 sm:p-12 md:p-16 shadow-editorial overflow-hidden">
+      <!-- Viền tạp chí mảnh bên trong -->
+      <div class="pointer-events-none absolute inset-3 sm:inset-5 border border-sage/15 rounded-2xl"></div>
+
+      <!-- Hiệu ứng ánh sáng dịu ở hai góc -->
+      <div class="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-terracotta/15 blur-2xl"></div>
+      <div class="pointer-events-none absolute -bottom-20 -left-16 w-64 h-64 rounded-full bg-sage/10 blur-2xl"></div>
+
+      <div class="relative z-10 text-center max-w-2xl mx-auto">
+        <!-- Huy hiệu kỷ niệm -->
+        <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-creamDark border border-terracotta/40 text-sage text-[11px] sm:text-xs uppercase tracking-[0.22em] font-medium mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
+          <span>Kỷ Niệm 11 Tháng Yêu Nhau</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
+        </div>
+
+        <p class="text-xs sm:text-sm uppercase tracking-[0.3em] text-terracotta font-medium mb-2">
+          Thiệp Mời Hẹn Hò
+        </p>
+
+        <!-- Tên cặp đôi -->
+        <h1 class="font-display text-4xl sm:text-6xl md:text-7xl text-sage font-medium tracking-tight leading-tight">
+          Mai Sơn <span class="font-serif italic text-terracotta font-normal">&amp;</span> Ngọc Hà
+        </h1>
+
+        <!-- Ngày giờ & Địa điểm nổi bật -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 my-6">
+          <span class="hidden sm:inline-block h-px w-12 bg-terracotta/45"></span>
+          <span class="font-serif italic text-lg sm:text-xl text-sage font-medium">
+            Thứ Ba, 24/11/2026 &nbsp;|&nbsp; 10:00 – 20:00 &nbsp;|&nbsp; Quận 1, TP.HCM
+          </span>
+          <span class="hidden sm:inline-block h-px w-12 bg-terracotta/45"></span>
+        </div>
+
+        <!-- Bộ đếm ngược thời gian thực đến 10:00 sáng 24/11/2026 (GMT+7) -->
+        <div class="mb-8">
+          <p id="countdown-label" class="text-[11px] uppercase tracking-[0.24em] text-muted mb-3">
+            Đếm ngược đến giờ hẹn 10:00 — 24.11.2026
+          </p>
+          <div id="countdown-grid" class="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto">
+            <div class="bg-cream border border-sage/15 rounded-2xl py-3 px-2 shadow-sm">
+              <span id="cd-days" class="block font-serif text-3xl sm:text-4xl font-semibold text-sage leading-none">00</span>
+              <span class="block text-[10px] uppercase tracking-[0.18em] text-terracotta mt-1.5">Ngày</span>
+            </div>
+            <div class="bg-cream border border-sage/15 rounded-2xl py-3 px-2 shadow-sm">
+              <span id="cd-hours" class="block font-serif text-3xl sm:text-4xl font-semibold text-sage leading-none">00</span>
+              <span class="block text-[10px] uppercase tracking-[0.18em] text-terracotta mt-1.5">Giờ</span>
+            </div>
+            <div class="bg-cream border border-sage/15 rounded-2xl py-3 px-2 shadow-sm">
+              <span id="cd-minutes" class="block font-serif text-3xl sm:text-4xl font-semibold text-sage leading-none">00</span>
+              <span class="block text-[10px] uppercase tracking-[0.18em] text-terracotta mt-1.5">Phút</span>
+            </div>
+            <div class="bg-cream border border-sage/15 rounded-2xl py-3 px-2 shadow-sm">
+              <span id="cd-seconds" class="block font-serif text-3xl sm:text-4xl font-semibold text-sage leading-none">00</span>
+              <span class="block text-[10px] uppercase tracking-[0.18em] text-terracotta mt-1.5">Giây</span>
+            </div>
+          </div>
+          <!-- Thông báo thay thế khi đã tới giờ hẹn -->
+          <div id="countdown-status" class="hidden max-w-md mx-auto bg-sage text-cream rounded-2xl py-3.5 px-5 font-serif italic text-xl shadow-sm"></div>
+        </div>
+
+        <!-- Lời mời chân thành từ Mai Sơn -->
+        <div class="bg-cream/95 border border-sage/12 rounded-2xl p-6 sm:p-8 text-left sm:text-center shadow-sm">
+          <p class="font-serif italic text-xl sm:text-2xl text-sage mb-3">
+            “Gửi Ngọc Hà thương mến,”
+          </p>
+          <p class="text-sm sm:text-base text-ink/85 leading-relaxed font-light">
+            Vậy là chúng mình đã cùng nhau đi qua 11 tháng thật dịu dàng và đầy ắp kỷ niệm. Nhân dịp đặc biệt vào <strong class="font-medium text-sage">Thứ Ba, ngày 24/11/2026</strong> này, anh muốn mời em dành trọn một ngày thật chậm giữa lòng Quận 1 — cùng dạo qua những công trình kiến trúc cổ kính, thưởng lãm nghệ thuật, nhâm nhi cà phê chiều và chia sẻ hai bữa chay thanh đạm ấm áp.
+          </p>
+          <p class="text-sm sm:text-base text-ink/85 leading-relaxed font-light mt-3">
+            Mọi điểm dừng chân đã được anh chuẩn bị chu đáo, chỉ còn chờ nụ cười rạng rỡ của em để hành trình thêm trọn vẹn.
+          </p>
+          <div class="mt-5 pt-4 border-t border-terracotta/25 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-8 text-xs text-muted">
+            <span>Người mời: <strong class="text-sage font-medium">Mai Sơn</strong></span>
+            <span class="hidden sm:inline text-terracotta">•</span>
+            <span>Khách mời đặc biệt: <strong class="text-sage font-medium">Ngọc Hà</strong></span>
+          </div>
+        </div>
+
+        <!-- Nút điều hướng nhanh -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a href="#itinerary" class="px-6 py-3 rounded-full bg-sage text-cream text-xs sm:text-sm font-medium tracking-wide hover:bg-sageLight transition-all shadow-md">
+            Xem lịch trình 8 điểm
+          </a>
+          <a href="#checkin-studio" class="px-6 py-3 rounded-full bg-cream border border-terracotta/55 text-sage text-xs sm:text-sm font-medium tracking-wide hover:bg-creamDark transition-all">
+            Khung Check-in Ảnh
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       THÔNG TIN NHANH (QUICK DETAILS)
+  ========================================================== -->
+  <section id="details" class="reveal max-w-5xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Ngày hẹn -->
+      <div class="bg-white/85 border border-sage/12 rounded-2xl p-6 shadow-card flex flex-col justify-between">
+        <div class="w-10 h-10 rounded-xl bg-creamDark text-sage flex items-center justify-center mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-[0.2em] text-terracotta font-medium">Ngày Hẹn</p>
+          <p class="font-serif text-2xl text-sage font-semibold mt-1">24 / 11 / 2026</p>
+          <p class="text-xs text-muted mt-1">Thứ Ba • Kỷ niệm 11 tháng</p>
+        </div>
+      </div>
+
+      <!-- Thời gian -->
+      <div class="bg-white/85 border border-sage/12 rounded-2xl p-6 shadow-card flex flex-col justify-between">
+        <div class="w-10 h-10 rounded-xl bg-creamDark text-sage flex items-center justify-center mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-[0.2em] text-terracotta font-medium">Thời Gian</p>
+          <p class="font-serif text-2xl text-sage font-semibold mt-1">10:00 – 20:00</p>
+          <p class="text-xs text-muted mt-1">Trọn vẹn 10 tiếng thư thả</p>
+        </div>
+      </div>
+
+      <!-- Khu vực -->
+      <div class="bg-white/85 border border-sage/12 rounded-2xl p-6 shadow-card flex flex-col justify-between">
+        <div class="w-10 h-10 rounded-xl bg-creamDark text-sage flex items-center justify-center mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 21s-6-5.33-6-10a6 6 0 1112 0c0 4.67-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-[0.2em] text-terracotta font-medium">Địa Điểm</p>
+          <p class="font-serif text-2xl text-sage font-semibold mt-1">Quận 1, TP.HCM</p>
+          <p class="text-xs text-muted mt-1">Lịch trình liền mạch &amp; ẩm thực chay</p>
+        </div>
+      </div>
+
+      <!-- Dresscode -->
+      <div class="bg-white/85 border border-sage/12 rounded-2xl p-6 shadow-card flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-10 h-10 rounded-xl bg-creamDark text-sage flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 3l3 3h4l-2 5 2 10H5l2-10-2-5h4l3-3z"/></svg>
+          </div>
+          <!-- Bảng màu trang phục gợi ý -->
+          <div class="flex items-center -space-x-1.5">
+            <span class="w-5 h-5 rounded-full bg-[#FAF6F0] border border-sage/25" title="Kem ấm"></span>
+            <span class="w-5 h-5 rounded-full bg-[#E8DFD1] border border-sage/25" title="Be sáng"></span>
+            <span class="w-5 h-5 rounded-full bg-[#C88A7D] border border-white" title="Hồng đất"></span>
+            <span class="w-5 h-5 rounded-full bg-[#3A4D39] border border-white" title="Xanh rêu"></span>
+          </div>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-[0.2em] text-terracotta font-medium">Trang Phục Gợi Ý</p>
+          <p class="font-serif text-2xl text-sage font-semibold mt-1">Thanh Lịch &amp; Nhẹ Nhàng</p>
+          <p class="text-xs text-muted mt-1">Tông sáng/trung tính, giày êm chân</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       3. LỊCH TRÌNH 8 ĐIỂM HẸN HÒ & ĂN CHAY QUẬN 1
+  ========================================================== -->
+  <section id="itinerary" class="reveal max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+      <div>
+        <p class="text-xs uppercase tracking-[0.28em] text-terracotta font-medium mb-2">Hành Trình Thứ Ba • 24/11/2026</p>
+        <h2 class="font-display text-3xl sm:text-4xl text-sage font-medium">Lịch Trình 8 Điểm Hẹn</h2>
+      </div>
+
+      <!-- Thanh tiến độ Check-in lưu vào localStorage -->
+      <div class="bg-white/90 border border-sage/15 rounded-2xl px-5 py-3.5 shadow-sm min-w-[240px]">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="text-muted font-medium">Tiến độ check-in</span>
+          <span id="progress-text" class="font-semibold text-sage">0 / 8 điểm</span>
+        </div>
+        <div class="w-full h-2 bg-creamDark rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-gradient-to-r from-sage to-terracotta rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danh sách Timeline render tự động bằng JavaScript -->
+    <div id="timeline-list" class="relative space-y-5 before:content-[''] before:hidden sm:before:block before:absolute before:left-[27px] before:top-4 before:bottom-4 before:w-px before:bg-terracotta/35">
+      <!-- Render bởi JS -->
+    </div>
+  </section>
+
+  <!-- =========================================================
+       4. KHUNG CHECK-IN & UPLOAD ẢNH KỶ NIỆM
+  ========================================================== -->
+  <section id="checkin-studio" class="reveal max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+    <div class="bg-white/90 border border-terracotta/35 rounded-3xl p-6 sm:p-10 shadow-editorial">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <p class="text-xs uppercase tracking-[0.28em] text-terracotta font-medium mb-2">Lưu Giữ Khoảnh Khắc 24.11.2026</p>
+        <h2 class="font-display text-3xl sm:text-4xl text-sage font-medium">Khung Check-in &amp; Ảnh Kỷ Niệm</h2>
+        <p class="text-sm text-muted mt-2 font-light">
+          Tải ảnh chụp cùng nhau tại từng điểm hẹn, chọn khung phong cách tạp chí để lưu vào album 11 tháng hoặc xuất file PNG chất lượng cao.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Cột trái: Bảng điều khiển tải ảnh & tùy chỉnh -->
+        <div class="lg:col-span-6 space-y-5">
+          <!-- Khu vực kéo thả hoặc chọn ảnh -->
+          <div>
+            <label class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-2">1. Chọn ảnh kỷ niệm</label>
+            <div id="drop-zone" class="relative border-2 border-dashed border-terracotta/50 hover:border-sage bg-cream/80 rounded-2xl p-6 text-center cursor-pointer transition-all group">
+              <input id="photo-input" type="file" accept="image/*" class="hidden" />
+              <div class="w-12 h-12 rounded-full bg-creamDark text-sage mx-auto flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <p class="text-sm font-medium text-sage">Chạm để chọn ảnh hoặc kéo thả vào đây</p>
+              <p id="file-name-label" class="text-xs text-muted mt-1">Hỗ trợ JPG, PNG, WEBP trên điện thoại &amp; máy tính</p>
+            </div>
+          </div>
+
+          <!-- Chọn địa điểm từ 8 điểm lịch trình -->
+          <div>
+            <label for="location-select" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-2">2. Địa điểm Check-in</label>
+            <select id="location-select" class="w-full rounded-xl border border-sage/20 bg-cream/70 px-4 py-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta">
+              <!-- Render bởi JS -->
+            </select>
+          </div>
+
+          <!-- Nhập lời nhắn / caption kỷ niệm -->
+          <div>
+            <label for="caption-input" class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-2">3. Lời nhắn / Caption kỷ niệm</label>
+            <input id="caption-input" type="text" maxlength="85" placeholder="VD: Khoảnh khắc thật bình yên bên nhau ngày 24/11..." value="Một ngày thật dịu dàng bên nhau giữa lòng Sài Gòn." class="w-full rounded-xl border border-sage/20 bg-cream/70 px-4 py-3 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta" />
+            <div class="flex justify-between mt-1 text-[11px] text-muted">
+              <span>Tự động gắn dấu ngày 24.11.2026</span>
+              <span id="caption-count">50/85</span>
+            </div>
+          </div>
+
+          <!-- Chọn 3 kiểu khung ảnh -->
+          <div>
+            <label class="block text-xs uppercase tracking-[0.18em] text-sage font-semibold mb-2">4. Kiểu khung ảnh</label>
+            <div class="grid grid-cols-3 gap-2.5">
+              <button type="button" data-frame="polaroid" class="frame-btn px-2.5 py-3 rounded-xl border-2 border-sage bg-sage text-cream text-xs font-medium transition-all text-center">
+                Polaroid<br /><span class="text-[10px] opacity-80 font-normal">Cổ Điển</span>
+              </button>
+              <button type="button" data-frame="editorial" class="frame-btn px-2.5 py-3 rounded-xl border border-sage/20 bg-cream text-sage text-xs font-medium hover:border-sage/50 transition-all text-center">
+                Tạp Chí<br /><span class="text-[10px] text-muted font-normal">Thanh Lịch</span>
+              </button>
+              <button type="button" data-frame="anniversary" class="frame-btn px-2.5 py-3 rounded-xl border border-sage/20 bg-cream text-sage text-xs font-medium hover:border-sage/50 transition-all text-center">
+                Kỷ Niệm<br /><span class="text-[10px] text-muted font-normal">11 Tháng</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Nút hành động: Lưu vào Album & Tải ảnh PNG -->
+          <div class="pt-2 flex flex-col sm:flex-row gap-3">
+            <button id="save-album-btn" type="button" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-sage text-cream text-sm font-medium hover:bg-sageLight transition-all shadow-md">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span>Lưu vào Album buổi hẹn</span>
+            </button>
+            <button id="download-png-btn" type="button" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-terracotta text-white text-sm font-medium hover:opacity-90 transition-all shadow-md">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+              <span>Tải ảnh PNG</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cột phải: Xem trước trực tiếp khung ảnh (Live Preview) -->
+        <div class="lg:col-span-6 flex flex-col items-center">
+          <p class="text-xs uppercase tracking-[0.2em] text-muted mb-3">Xem trước trực tiếp</p>
+
+          <!-- Khung Preview thay đổi theo kiểu đã chọn -->
+          <div id="preview-frame" class="w-full max-w-[380px] transition-all duration-300 bg-white p-4 pb-6 rounded-2xl shadow-editorial border border-sage/10">
+            <!-- Header phụ cho kiểu Tạp Chí / Kỷ Niệm -->
+            <div id="preview-top-bar" class="hidden items-center justify-between text-[10px] uppercase tracking-[0.2em] mb-2.5 pb-2 border-b border-current/20">
+              <span>11 Months of Us</span>
+              <span>Saigon • 24.11.2026</span>
+            </div>
+
+            <!-- Vùng hiển thị ảnh -->
+            <div class="relative w-full aspect-[4/4.3] rounded-xl overflow-hidden bg-creamDark flex items-center justify-center">
+              <img id="preview-img" src="" alt="Ảnh check-in" class="hidden w-full h-full object-cover" />
+              <!-- Placeholder khi chưa tải ảnh -->
+              <div id="preview-placeholder" class="flex flex-col items-center justify-center text-center p-6 text-sage/70">
+                <svg class="w-12 h-12 mb-3 text-terracotta/75" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+                <p class="font-serif italic text-xl text-sage">Khoảnh khắc 24.11.2026</p>
+                <p class="text-xs text-muted mt-1">Chọn ảnh để xem trước ngay trong khung</p>
+              </div>
+              <!-- Huy hiệu số 11 cho khung Kỷ Niệm 11 Tháng -->
+              <div id="preview-badge" class="hidden absolute top-3 right-3 w-11 h-11 rounded-full bg-sage/90 text-cream border border-terracottaLight flex-col items-center justify-center shadow-md">
+                <span class="font-serif text-base font-semibold leading-none">11</span>
+                <span class="text-[7px] uppercase tracking-wider text-terracottaLight">Tháng</span>
+              </div>
+              <!-- Dấu ngày tinh tế góc dưới ảnh -->
+              <span class="absolute bottom-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-sm text-cream text-[10px] tracking-[0.16em]">
+                24.11.2026
+              </span>
+            </div>
+
+            <!-- Chân khung ảnh -->
+            <div class="mt-4 text-center px-1">
+              <p id="preview-location" class="text-[11px] uppercase tracking-[0.18em] text-terracotta font-semibold">
+                Dinh Độc Lập
+              </p>
+              <p id="preview-caption" class="font-serif italic text-xl text-sage mt-1 leading-snug break-words">
+                “Một ngày thật dịu dàng bên nhau giữa lòng Sài Gòn.”
+              </p>
+              <div id="preview-meta" class="mt-3 pt-2.5 border-t border-sage/10 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted">
+                <span>Mai Sơn &amp; Ngọc Hà</span>
+                <span>•</span>
+                <span>11 Months</span>
+                <span>•</span>
+                <span>24.11.2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+           ALBUM BUỔI HẸN 24/11/2026 (LƯU TRONG LOCALSTORAGE)
+      ====================================================== -->
+      <div class="mt-14 pt-10 border-t border-sage/12">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <h3 class="font-display text-2xl text-sage font-medium">Album Buổi Hẹn 24/11/2026</h3>
+            <p class="text-xs text-muted mt-0.5">Bộ sưu tập ảnh check-in kỷ niệm 11 tháng được lưu trên thiết bị của bạn.</p>
+          </div>
+          <span id="album-count" class="inline-flex items-center self-start sm:self-auto px-3.5 py-1 rounded-full bg-creamDark text-sage text-xs font-medium">
+            0 khoảnh khắc
+          </span>
+        </div>
+
+        <div id="album-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Render bởi JS -->
+        </div>
+
+        <div id="album-empty" class="text-center py-10 px-4 rounded-2xl bg-cream/80 border border-dashed border-sage/20">
+          <p class="font-serif italic text-xl text-sage">Chưa có ảnh nào trong album</p>
+          <p class="text-xs text-muted mt-1">Hãy tải lên bức ảnh đầu tiên ở khung phía trên và nhấn “Lưu vào Album buổi hẹn” nhé!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       5. MỤC XÁC NHẬN THAM DỰ (RSVP)
+  ========================================================== -->
+  <section id="rsvp" class="reveal max-w-4xl mx-auto px-4 sm:px-6 pb-20">
+    <div class="relative bg-sage text-cream rounded-3xl p-8 sm:p-12 md:p-14 shadow-editorial overflow-hidden text-center">
+      <!-- Khung viền mảnh sang trọng -->
+      <div class="pointer-events-none absolute inset-4 border border-terracottaLight/35 rounded-2xl"></div>
+      <div class="pointer-events-none absolute -top-20 -left-20 w-60 h-60 rounded-full bg-terracotta/25 blur-3xl"></div>
+      <div class="pointer-events-none absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-cream/10 blur-3xl"></div>
+
+      <div class="relative z-10 max-w-xl mx-auto">
+        <p class="text-xs uppercase tracking-[0.3em] text-terracottaLight mb-3">Xác Nhận Tham Dự</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-medium">Ngọc Hà có sẵn sàng cho buổi hẹn 24/11/2026 không?</h2>
+        <p class="text-sm text-cream/80 font-light mt-3 leading-relaxed">
+          Viết vài lời nhắn nhỏ gửi lại cho Mai Sơn trước khi nhấn xác nhận tham dự nhé!
+        </p>
+
+        <!-- Form nhập lời nhắn & nút đồng ý -->
+        <div id="rsvp-form-area" class="mt-7 space-y-4">
+          <textarea id="rsvp-message" rows="3" placeholder="Lời nhắn gửi Mai Sơn... (VD: Em rất mong chờ buổi hẹn kỷ niệm 11 tháng, 10:00 sáng 24/11 gặp anh nha!)" class="w-full rounded-2xl bg-cream/10 border border-cream/25 px-4 py-3.5 text-sm text-cream placeholder:text-cream/55 focus:outline-none focus:ring-2 focus:ring-terracottaLight resize-none"></textarea>
+
+          <button id="rsvp-btn" type="button" onclick="confirmRSVP()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-9 py-4 rounded-full bg-terracotta text-white text-sm sm:text-base font-medium tracking-wide hover:bg-[#b87b6e] active:scale-[0.98] transition-all shadow-lg">
+            <span>Em đồng ý đi hẹn!</span>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </button>
+        </div>
+
+        <!-- Trạng thái sau khi xác nhận -->
+        <div id="rsvp-confirmed-card" class="hidden mt-7 bg-cream/10 backdrop-blur-sm border border-terracottaLight/40 rounded-2xl p-6 text-center">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-terracotta/30 text-terracottaLight text-xs uppercase tracking-widest mb-3">
+            <span>✓ Đã xác nhận tham dự</span>
+          </div>
+          <p class="font-serif italic text-2xl text-cream">
+            Cảm ơn Ngọc Hà đã đồng ý! Hẹn gặp em lúc 10:00 sáng Thứ Ba, ngày 24/11/2026 nhé.
+          </p>
+          <p id="rsvp-saved-msg" class="text-sm text-cream/90 mt-3 italic bg-black/15 rounded-xl px-4 py-3 hidden"></p>
+
+          <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <button type="button" onclick="copyRsvpReply()" class="px-5 py-2.5 rounded-full bg-cream text-sage text-xs font-medium hover:bg-creamDark transition-colors shadow-sm">
+              Sao chép tin nhắn gửi Mai Sơn
+            </button>
+            <button type="button" onclick="launchPetalsCelebration()" class="px-4 py-2.5 rounded-full border border-terracottaLight/60 text-terracottaLight text-xs hover:bg-terracotta/20 transition-colors">
+              Thả thêm cánh hoa
+            </button>
+            <button type="button" onclick="resetRsvpEdit()" class="px-4 py-2.5 rounded-full border border-cream/30 text-cream/85 text-xs hover:bg-cream/10 transition-colors">
+              Sửa lời nhắn
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-sage/10 py-8 text-center text-xs text-muted px-4">
+    <p class="font-serif italic text-lg text-sage mb-1">Mai Sơn &amp; Ngọc Hà — 11 Months of Us</p>
+    <p>Thứ Ba, 24/11/2026 &bull; 10:00 – 20:00 &bull; Quận 1, TP. Hồ Chí Minh</p>
+  </footer>
+
+  <!-- Canvas ẩn dùng để vẽ và xuất ảnh PNG độ phân giải cao -->
+  <canvas id="export-canvas" class="hidden"></canvas>
+
+  <!-- =========================================================
+       JAVASCRIPT LOGIC
+  ========================================================== -->
+  <script>
+    /* -----------------------------------------------------------
+       1. DỮ LIỆU LỊCH TRÌNH 8 ĐIỂM HẸN HÒ & ĂN CHAY QUẬN 1
+    ----------------------------------------------------------- */
+    const ITINERARY = [
+      {
+        id: 'stop-1',
+        time: '10:00 – 11:30',
+        title: 'Dinh Độc Lập',
+        address: '135 Nam Kỳ Khởi Nghĩa, Quận 1',
+        desc: 'Khởi đầu ngày kỷ niệm 11 tháng trong không gian kiến trúc lịch sử trang nhã và khuôn viên cây xanh mát mẻ.',
+        tag: 'Kiến trúc'
+      },
+      {
+        id: 'stop-2',
+        time: '11:30 – 12:30',
+        title: 'Bưu điện Trung tâm & Đường sách TP.HCM',
+        address: '02 Công trường Công xã Paris, Quận 1',
+        desc: 'Chụp ảnh kỷ niệm dưới mái vòm cổ điển của Bưu điện rồi tản bộ rợp bóng cây xanh tại Đường sách kế bên.',
+        tag: 'Dạo phố'
+      },
+      {
+        id: 'stop-3',
+        time: '12:30 – 14:00',
+        title: 'Ăn trưa chay tại Quán Chay Nhà',
+        address: '19/14 Nguyễn Thị Minh Khai, Quận 1',
+        desc: 'Bữa trưa chay thanh đạm, ấm cúng mang hương vị cơm nhà nhẹ nhàng cho hành trình buổi chiều.',
+        tag: 'Ẩm thực chay'
+      },
+      {
+        id: 'stop-4',
+        time: '14:00 – 15:30',
+        title: 'Bảo tàng Mỹ thuật TP.HCM',
+        address: '97 Phó Đức Chính, Quận 1',
+        desc: 'Tránh nắng đầu giờ chiều trong tòa nhà Đông Dương cổ điển với khung cửa kính màu và các phòng tranh nghệ thuật.',
+        tag: 'Nghệ thuật'
+      },
+      {
+        id: 'stop-5',
+        time: '15:30 – 17:00',
+        title: 'Nghỉ chân & cà phê tại Soo Kafe Bến Thành',
+        address: '35 Phan Chu Trinh, Quận 1',
+        desc: 'Thư giãn, trò chuyện cùng nhau bên ly trà hoặc cà phê thơm dịu trong không gian tối giản, yên tĩnh.',
+        tag: 'Cà phê chiều'
+      },
+      {
+        id: 'stop-6',
+        time: '17:00 – 18:15',
+        title: 'Ngắm hoàng hôn tại Công viên Bến Bạch Đằng',
+        address: '10B Tôn Đức Thắng, Quận 1',
+        desc: 'Hóng gió mát bên bờ sông Sài Gòn, ngắm khoảnh khắc hoàng hôn chuyển sang ánh đèn thành phố rực rỡ.',
+        tag: 'Hoàng hôn'
+      },
+      {
+        id: 'stop-7',
+        time: '18:15 – 19:30',
+        title: 'Ăn tối chay tại 21Grams Vegetarian',
+        address: '42 Nguyễn Huệ, Quận 1',
+        desc: 'Bữa tối kỷ niệm 11 tháng với thực đơn chay sáng tạo, trình bày tinh tế và tầm nhìn hướng phố đi bộ lung linh.',
+        tag: 'Bữa tối kỷ niệm'
+      },
+      {
+        id: 'stop-8',
+        time: '19:30 – 20:00',
+        title: 'Dạo mát Phố Đi Bộ Nguyễn Huệ',
+        address: 'Phố Đi Bộ Nguyễn Huệ, Quận 1',
+        desc: 'Tay trong tay tản bộ nhẹ nhàng giữa không khí buổi tối dịu mát để khép lại ngày hẹn 24/11 thật trọn vẹn.',
+        tag: 'Kết thúc ngọt ngào'
+      }
+    ];
+
+    /* -----------------------------------------------------------
+       2. TRẠNG THÁI ỨNG DỤNG & LOCALSTORAGE
+    ----------------------------------------------------------- */
+    const STORAGE_KEYS = {
+      CHECKINS: 'ms_nh_11m_24112026_checkins',
+      ALBUM: 'ms_nh_11m_24112026_album',
+      RSVP: 'ms_nh_11m_24112026_rsvp'
+    };
+
+    let checkedStops = loadJSON(STORAGE_KEYS.CHECKINS, {});
+    let albumPhotos = loadJSON(STORAGE_KEYS.ALBUM, []);
+    let rsvpState = loadJSON(STORAGE_KEYS.RSVP, { confirmed: false, message: '' });
+
+    // Trạng thái khung Check-in Ảnh
+    let currentFrame = 'polaroid';
+    let currentImageObj = null;      // Ảnh gốc độ phân giải cao dùng để vẽ Canvas PNG
+    let currentImageDataUrl = null;  // Ảnh nén nhẹ dùng lưu localStorage
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (e) {
+        showToast('Bộ nhớ trình duyệt đã đầy, hãy xóa bớt ảnh cũ trong Album nhé!', 'error');
+        return false;
+      }
+    }
+
+    /* -----------------------------------------------------------
+       3. HỆ THỐNG THÔNG BÁO TOAST
+    ----------------------------------------------------------- */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error'
+        ? 'bg-[#8B3A3A] text-white'
+        : 'bg-sage text-cream border border-terracottaLight/40';
+
+      toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2.5 transform translate-y-3 opacity-0 transition-all duration-300 ${bgClass}`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-200' : 'bg-terracottaLight'} shrink-0"></span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-3', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-3', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    /* -----------------------------------------------------------
+       4. MỞ PHONG BÌ & SCROLL REVEAL
+    ----------------------------------------------------------- */
+    function openEnvelope() {
+      const box = document.getElementById('envelope-box');
+      const overlay = document.getElementById('envelope-overlay');
+      if (box.classList.contains('opening')) return;
+      box.classList.add('opening');
+      setTimeout(() => {
+        overlay.classList.add('opened');
+        document.body.style.overflowY = 'auto';
+      }, 780);
+    }
+
+    function initScrollReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08 });
+
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    }
+
+    /* -----------------------------------------------------------
+       5. BỘ ĐẾM NGƯỢC THỜI GIAN THỰC ĐẾN 10:00 NGÀY 24/11/2026 (GMT+7)
+    ----------------------------------------------------------- */
+    function initCountdown() {
+      const targetStart = new Date('2026-11-24T10:00:00+07:00').getTime();
+      const targetEnd = new Date('2026-11-24T20:00:00+07:00').getTime();
+
+      const gridEl = document.getElementById('countdown-grid');
+      const statusEl = document.getElementById('countdown-status');
+      const labelEl = document.getElementById('countdown-label');
+
+      const dEl = document.getElementById('cd-days');
+      const hEl = document.getElementById('cd-hours');
+      const mEl = document.getElementById('cd-minutes');
+      const sEl = document.getElementById('cd-seconds');
+
+      function pad(n) {
+        return String(n).padStart(2, '0');
+      }
+
+      function tick() {
+        const now = Date.now();
+        const diff = targetStart - now;
+
+        if (diff > 0) {
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((diff / (1000 * 60)) % 60);
+          const seconds = Math.floor((diff / 1000) % 60);
+
+          dEl.textContent = pad(days);
+          hEl.textContent = pad(hours);
+          mEl.textContent = pad(minutes);
+          sEl.textContent = pad(seconds);
+        } else if (now <= targetEnd) {
+          gridEl.classList.add('hidden');
+          labelEl.textContent = 'Hôm nay là ngày đặc biệt của đôi mình';
+          statusEl.textContent = 'Buổi hẹn kỷ niệm 11 tháng đang diễn ra thật ngọt ngào! ♥';
+          statusEl.classList.remove('hidden');
+        } else {
+          gridEl.classList.add('hidden');
+          labelEl.textContent = '24.11.2026 — Kỷ niệm khó quên';
+          statusEl.textContent = 'Chúc mừng Mai Sơn & Ngọc Hà tròn 11 tháng bên nhau! ♥';
+          statusEl.classList.remove('hidden');
+        }
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    /* -----------------------------------------------------------
+       6. RENDER LỊCH TRÌNH 8 ĐIỂM & CHECK-IN TIẾN ĐỘ
+    ----------------------------------------------------------- */
+    function renderTimeline() {
+      const container = document.getElementById('timeline-list');
+      container.innerHTML = '';
+
+      ITINERARY.forEach((stop, index) => {
+        const isDone = Boolean(checkedStops[stop.id]);
+        const card = document.createElement('div');
+        card.className = 'relative sm:pl-16';
+
+        card.innerHTML = `
+          <!-- Điểm đánh số trên trục thời gian -->
+          <div class="hidden sm:flex absolute left-0 top-5 w-14 h-14 rounded-full items-center justify-center border-2 transition-colors ${
+            isDone
+              ? 'bg-sage border-sage text-cream'
+              : 'bg-cream border-terracotta/55 text-sage'
+          }">
+            ${isDone
+              ? '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
+              : `<span class="font-serif text-lg font-semibold">0${index + 1}</span>`
+            }
+          </div>
+
+          <!-- Thẻ thông tin điểm hẹn -->
+          <div class="rounded-2xl p-5 sm:p-6 border transition-all shadow-card ${
+            isDone
+              ? 'bg-sage/[0.06] border-sage/35'
+              : 'bg-white/90 border-sage/12 hover:border-terracotta/50'
+          }">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-creamDark text-sage text-xs font-semibold tracking-wide">${stop.time}</span>
+                  <span class="px-2.5 py-0.5 rounded-full border border-terracotta/40 text-terracotta text-[11px] font-medium">${stop.tag}</span>
+                </div>
+                <h3 class="font-serif text-2xl text-sage font-semibold ${isDone ? 'line-through decoration-terracotta/65 opacity-85' : ''}">
+                  ${stop.title}
+                </h3>
+                <p class="text-xs text-muted mt-1 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-terracotta shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 21s-6-5.33-6-10a6 6 0 1112 0c0 4.67-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>
+                  <span>${stop.address}</span>
+                </p>
+                <p class="text-sm text-ink/80 font-light mt-2.5 leading-relaxed">${stop.desc}</p>
+              </div>
+
+              <!-- Nút Đã check-in & Up ảnh -->
+              <div class="flex sm:flex-col items-center sm:items-end gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-sage/10">
+                <button type="button" onclick="toggleStopCheckin('${stop.id}')" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  isDone
+                    ? 'bg-sage text-cream shadow-sm'
+                    : 'bg-creamDark text-sage hover:bg-sage hover:text-cream'
+                }">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  <span>${isDone ? 'Đã check-in ✓' : 'Đã check-in'}</span>
+                </button>
+                <button type="button" onclick="jumpToPhotoCheckin('${stop.id}')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-terracotta/45 text-terracotta text-xs font-medium hover:bg-terracotta hover:text-white transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+                  <span>Up ảnh</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      updateProgressBar();
+    }
+
+    function toggleStopCheckin(stopId) {
+      checkedStops[stopId] = !checkedStops[stopId];
+      saveJSON(STORAGE_KEYS.CHECKINS, checkedStops);
+      renderTimeline();
+
+      const stop = ITINERARY.find((s) => s.id === stopId);
+      if (checkedStops[stopId]) {
+        showToast(`Đã check-in hoàn thành tại ${stop.title}!`);
+      }
+    }
+
+    function updateProgressBar() {
+      const doneCount = ITINERARY.filter((s) => checkedStops[s.id]).length;
+      const percent = Math.round((doneCount / ITINERARY.length) * 100);
+      document.getElementById('progress-text').textContent = `${doneCount} / ${ITINERARY.length} điểm`;
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+    }
+
+    function jumpToPhotoCheckin(stopId) {
+      const select = document.getElementById('location-select');
+      const stop = ITINERARY.find((s) => s.id === stopId);
+      if (stop) {
+        select.value = stop.title;
+        updateLivePreview();
+        showToast(`Đã chọn sẵn địa điểm: ${stop.title}`);
+      }
+      document.getElementById('checkin-studio').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* -----------------------------------------------------------
+       7. KHUNG CHECK-IN ẢNH & XUẤT FILE PNG BẰNG HTML5 CANVAS
+    ----------------------------------------------------------- */
+    function initCheckinStudio() {
+      const select = document.getElementById('location-select');
+      ITINERARY.forEach((stop) => {
+        const opt = document.createElement('option');
+        opt.value = stop.title;
+        opt.textContent = `${stop.time} — ${stop.title}`;
+        select.appendChild(opt);
+      });
+
+      const dropZone = document.getElementById('drop-zone');
+      const photoInput = document.getElementById('photo-input');
+      const captionInput = document.getElementById('caption-input');
+
+      dropZone.addEventListener('click', () => photoInput.click());
+      photoInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) handleImageFile(e.target.files[0]);
+      });
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-sage', 'bg-creamDark');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-sage', 'bg-creamDark');
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-sage', 'bg-creamDark');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleImageFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      select.addEventListener('change', updateLivePreview);
+      captionInput.addEventListener('input', () => {
+        document.getElementById('caption-count').textContent = `${captionInput.value.length}/85`;
+        updateLivePreview();
+      });
+
+      document.querySelectorAll('.frame-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentFrame = btn.dataset.frame;
+          document.querySelectorAll('.frame-btn').forEach((b) => {
+            const active = b.dataset.frame === currentFrame;
+            b.className = active
+              ? 'frame-btn px-2.5 py-3 rounded-xl border-2 border-sage bg-sage text-cream text-xs font-medium transition-all text-center'
+              : 'frame-btn px-2.5 py-3 rounded-xl border border-sage/20 bg-cream text-sage text-xs font-medium hover:border-sage/50 transition-all text-center';
+          });
+          updateLivePreview();
+        });
+      });
+
+      document.getElementById('save-album-btn').addEventListener('click', savePhotoToAlbum);
+      document.getElementById('download-png-btn').addEventListener('click', downloadCheckinPNG);
+
+      updateLivePreview();
+      renderAlbum();
+    }
+
+    function handleImageFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WEBP).', 'error');
+        return;
+      }
+
+      document.getElementById('file-name-label').textContent = `Đã chọn: ${file.name}`;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          currentImageObj = img;
+          currentImageDataUrl = compressImage(img, 820, 0.78);
+
+          const previewImg = document.getElementById('preview-img');
+          previewImg.src = event.target.result;
+          previewImg.classList.remove('hidden');
+          document.getElementById('preview-placeholder').classList.add('hidden');
+          showToast('Đã tải ảnh lên khung xem trước!');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function compressImage(img, maxDim, quality) {
+      const c = document.createElement('canvas');
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      return c.toDataURL('image/jpeg', quality);
+    }
+
+    function updateLivePreview() {
+      const frameEl = document.getElementById('preview-frame');
+      const topBar = document.getElementById('preview-top-bar');
+      const badge = document.getElementById('preview-badge');
+      const locEl = document.getElementById('preview-location');
+      const capEl = document.getElementById('preview-caption');
+      const metaEl = document.getElementById('preview-meta');
+
+      const location = document.getElementById('location-select').value;
+      const caption = document.getElementById('caption-input').value.trim();
+
+      locEl.textContent = location;
+      capEl.textContent = caption ? `“${caption}”` : '“Khoảnh khắc kỷ niệm 11 tháng bên nhau.”';
+
+      if (currentFrame === 'polaroid') {
+        frameEl.className = 'w-full max-w-[380px] transition-all duration-300 bg-white p-4 pb-7 rounded-2xl shadow-editorial border border-sage/10';
+        topBar.classList.add('hidden');
+        topBar.classList.remove('flex');
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        locEl.className = 'text-[11px] uppercase tracking-[0.18em] text-terracotta font-semibold';
+        capEl.className = 'font-serif italic text-xl text-sage mt-1 leading-snug break-words';
+        metaEl.className = 'mt-3 pt-2.5 border-t border-sage/10 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted';
+      } else if (currentFrame === 'editorial') {
+        frameEl.className = 'w-full max-w-[380px] transition-all duration-300 bg-[#3A4D39] text-[#FAF6F0] p-5 pb-6 rounded-2xl shadow-editorial border-2 border-[#C88A7D]/65';
+        topBar.classList.remove('hidden');
+        topBar.classList.add('flex', 'text-[#DFB0A6]');
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        locEl.className = 'text-[11px] uppercase tracking-[0.22em] text-[#DFB0A6] font-semibold';
+        capEl.className = 'font-serif italic text-xl text-[#FAF6F0] mt-1 leading-snug break-words';
+        metaEl.className = 'mt-3 pt-2.5 border-t border-[#FAF6F0]/15 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#FAF6F0]/75';
+      } else {
+        // anniversary
+        frameEl.className = 'w-full max-w-[380px] transition-all duration-300 bg-[#FAF6F0] p-5 pb-6 rounded-2xl shadow-editorial border-2 border-[#C88A7D] ring-4 ring-[#C88A7D]/15';
+        topBar.classList.remove('hidden');
+        topBar.classList.add('flex', 'text-sage');
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+        locEl.className = 'text-[11px] uppercase tracking-[0.2em] text-terracotta font-semibold';
+        capEl.className = 'font-serif italic text-xl text-sage mt-1 leading-snug break-words';
+        metaEl.className = 'mt-3 pt-2.5 border-t border-sage/15 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted';
+      }
+    }
+
+    function savePhotoToAlbum() {
+      if (!currentImageDataUrl) {
+        showToast('Hãy chọn một bức ảnh trước khi lưu vào Album nhé!', 'error');
+        return;
+      }
+
+      const location = document.getElementById('location-select').value;
+      const caption = document.getElementById('caption-input').value.trim() || 'Khoảnh khắc kỷ niệm 11 tháng bên nhau.';
+
+      const entry = {
+        id: 'photo_' + Date.now(),
+        image: currentImageDataUrl,
+        location,
+        caption,
+        frame: currentFrame,
+        createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      albumPhotos.unshift(entry);
+      if (saveJSON(STORAGE_KEYS.ALBUM, albumPhotos)) {
+        renderAlbum();
+        showToast('Đã lưu khoảnh khắc vào Album buổi hẹn!');
+      } else {
+        albumPhotos.shift();
+      }
+    }
+
+    function deleteAlbumPhoto(photoId) {
+      albumPhotos = albumPhotos.filter((p) => p.id !== photoId);
+      saveJSON(STORAGE_KEYS.ALBUM, albumPhotos);
+      renderAlbum();
+      showToast('Đã xóa ảnh khỏi Album.');
+    }
+
+    function renderAlbum() {
+      const grid = document.getElementById('album-grid');
+      const empty = document.getElementById('album-empty');
+      const countEl = document.getElementById('album-count');
+
+      countEl.textContent = `${albumPhotos.length} khoảnh khắc`;
+      grid.innerHTML = '';
+
+      if (albumPhotos.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      albumPhotos.forEach((item) => {
+        const isDark = item.frame === 'editorial';
+        const isAnniv = item.frame === 'anniversary';
+
+        const card = document.createElement('div');
+        card.className = `relative rounded-2xl p-3.5 pb-4 shadow-card transition-transform hover:-translate-y-1 ${
+          isDark
+            ? 'bg-sage text-cream border border-terracottaLight/50'
+            : isAnniv
+              ? 'bg-cream border-2 border-terracotta/70'
+              : 'bg-white border border-sage/12'
+        }`;
+
+        card.innerHTML = `
+          <div class="relative aspect-[4/4.2] rounded-xl overflow-hidden bg-creamDark mb-3">
+            <img src="${item.image}" alt="${item.location}" class="w-full h-full object-cover" />
+            <button type="button" onclick="deleteAlbumPhoto('${item.id}')" title="Xóa ảnh này" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/55 hover:bg-red-600 text-white flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <span class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-sm text-white text-[10px]">${item.createdAt} • 24.11.2026</span>
+          </div>
+          <div class="text-center px-1">
+            <p class="text-[10px] uppercase tracking-[0.18em] ${isDark ? 'text-terracottaLight' : 'text-terracotta'} font-semibold truncate">${item.location}</p>
+            <p class="font-serif italic text-lg ${isDark ? 'text-cream' : 'text-sage'} mt-0.5 line-clamp-2">“${item.caption}”</p>
+            <p class="text-[9px] uppercase tracking-[0.18em] ${isDark ? 'text-cream/65' : 'text-muted'} mt-2">Mai Sơn &amp; Ngọc Hà • 11 Months • 24.11.2026</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* -----------------------------------------------------------
+       XUẤT FILE ẢNH PNG CHẤT LƯỢNG CAO (1080 x 1350) BẰNG CANVAS
+    ----------------------------------------------------------- */
+    function downloadCheckinPNG() {
+      if (!currentImageObj) {
+        showToast('Hãy tải một bức ảnh lên trước khi xuất file PNG nhé!', 'error');
+        return;
+      }
+
+      const canvas = document.getElementById('export-canvas');
+      const W = 1080;
+      const H = 1350;
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      const location = document.getElementById('location-select').value;
+      const caption = document.getElementById('caption-input').value.trim() || 'Khoảnh khắc kỷ niệm 11 tháng bên nhau.';
+
+      const isEditorial = currentFrame === 'editorial';
+      const isAnniv = currentFrame === 'anniversary';
+
+      // 1. Vẽ nền khung theo phong cách đã chọn
+      ctx.fillStyle = isEditorial ? '#3A4D39' : (isAnniv ? '#FAF6F0' : '#FFFFFF');
+      ctx.fillRect(0, 0, W, H);
+
+      // Viền trang trí
+      if (isEditorial) {
+        ctx.strokeStyle = 'rgba(223, 176, 166, 0.55)';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(36, 36, W - 72, H - 72);
+      } else if (isAnniv) {
+        ctx.strokeStyle = '#C88A7D';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(32, 32, W - 64, H - 64);
+        ctx.strokeStyle = 'rgba(58, 77, 57, 0.25)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(48, 48, W - 96, H - 96);
+      } else {
+        ctx.strokeStyle = 'rgba(58, 77, 57, 0.12)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(20, 20, W - 40, H - 40);
+      }
+
+      // Header trên cùng cho kiểu Tạp Chí & Kỷ Niệm
+      let imgTop = 72;
+      if (isEditorial || isAnniv) {
+        imgTop = 128;
+        ctx.fillStyle = isEditorial ? '#DFB0A6' : '#3A4D39';
+        ctx.font = '500 22px "Be Vietnam Pro", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('11 MONTHS OF US', 84, 96);
+        ctx.textAlign = 'right';
+        ctx.fillText('SAIGON • 24.11.2026', W - 84, 96);
+      }
+
+      // 2. Vẽ ảnh chính dạng cover-fit bo góc
+      const padX = 76;
+      const imgW = W - padX * 2;
+      const imgH = isEditorial || isAnniv ? 855 : 905;
+      const radius = 24;
+
+      ctx.save();
+      drawRoundedRect(ctx, padX, imgTop, imgW, imgH, radius);
+      ctx.clip();
+
+      const imgRatio = currentImageObj.naturalWidth / currentImageObj.naturalHeight;
+      const boxRatio = imgW / imgH;
+      let drawW, drawH, offsetX, offsetY;
+
+      if (imgRatio > boxRatio) {
+        drawH = imgH;
+        drawW = imgH * imgRatio;
+        offsetX = padX - (drawW - imgW) / 2;
+        offsetY = imgTop;
+      } else {
+        drawW = imgW;
+        drawH = imgW / imgRatio;
+        offsetX = padX;
+        offsetY = imgTop - (drawH - imgH) / 2;
+      }
+      ctx.drawImage(currentImageObj, offsetX, offsetY, drawW, drawH);
+
+      // Dấu ngày 24.11.2026 ở góc dưới phải của ảnh
+      const pillW = 190;
+      const pillH = 44;
+      const pillX = padX + imgW - pillW - 24;
+      const pillY = imgTop + imgH - pillH - 24;
+      ctx.fillStyle = 'rgba(37, 43, 36, 0.55)';
+      drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 22);
+      ctx.fill();
+      ctx.fillStyle = '#FAF6F0';
+      ctx.font = '500 20px "Be Vietnam Pro", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('24.11.2026', pillX + pillW / 2, pillY + 29);
+      ctx.restore();
+
+      // Huy hiệu số 11 cho kiểu Kỷ Niệm 11 Tháng
+      if (isAnniv) {
+        const bx = padX + imgW - 68;
+        const by = imgTop + 68;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(bx, by, 44, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(58, 77, 57, 0.92)';
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#DFB0A6';
+        ctx.stroke();
+
+        ctx.fillStyle = '#FAF6F0';
+        ctx.textAlign = 'center';
+        ctx.font = '600 34px "Cormorant Garamond", Georgia, serif';
+        ctx.fillText('11', bx, by + 4);
+        ctx.fillStyle = '#DFB0A6';
+        ctx.font = '500 12px "Be Vietnam Pro", sans-serif';
+        ctx.fillText('THÁNG', bx, by + 22);
+        ctx.restore();
+      }
+
+      // 3. Tên địa điểm
+      const textStartY = imgTop + imgH + 66;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = isEditorial ? '#DFB0A6' : '#C88A7D';
+      ctx.font = '600 24px "Be Vietnam Pro", sans-serif';
+      ctx.fillText(location.toUpperCase(), W / 2, textStartY);
+
+      // 4. Lời chúc / Caption (tự động xuống dòng đẹp mắt)
+      ctx.fillStyle = isEditorial ? '#FAF6F0' : '#3A4D39';
+      ctx.font = 'italic 44px "Cormorant Garamond", Georgia, serif';
+      wrapCanvasText(ctx, `“${caption}”`, W / 2, textStartY + 58, W - 180, 52, 2);
+
+      // 5. Đường kẻ mảnh & dấu ấn ngày 24/11/2026 dưới cùng
+      const footerY = H - 76;
+      ctx.strokeStyle = isEditorial ? 'rgba(250, 246, 240, 0.22)' : 'rgba(58, 77, 57, 0.16)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(210, footerY - 38);
+      ctx.lineTo(W - 210, footerY - 38);
+      ctx.stroke();
+
+      ctx.fillStyle = isEditorial ? 'rgba(250, 246, 240, 0.8)' : '#6E6A63';
+      ctx.font = '500 21px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('MAI SƠN & NGỌC HÀ  •  11 MONTHS  •  24/11/2026', W / 2, footerY);
+
+      // Tải file PNG xuống thiết bị
+      const link = document.createElement('a');
+      link.download = `Checkin-11Thang-24-11-2026-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Đã xuất và tải xuống ảnh Check-in PNG!');
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = text.split(' ');
+      let line = '';
+      let lineCount = 0;
+
+      for (let i = 0; i < words.length; i++) {
+        const testLine = line + (line ? ' ' : '') + words[i];
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          ctx.fillText(line, x, y + lineCount * lineHeight);
+          line = words[i];
+          lineCount++;
+          if (lineCount >= maxLines - 1) {
+            const rest = words.slice(i).join(' ');
+            ctx.fillText(rest.length > 48 ? rest.slice(0, 45) + '...' : rest, x, y + lineCount * lineHeight);
+            return;
+          }
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y + lineCount * lineHeight);
+    }
+
+    /* -----------------------------------------------------------
+       8. XÁC NHẬN THAM DỰ (RSVP) & HIỆU ỨNG CÁNH HOA RƠI
+    ----------------------------------------------------------- */
+    function renderRSVP() {
+      const formArea = document.getElementById('rsvp-form-area');
+      const confirmedCard = document.getElementById('rsvp-confirmed-card');
+      const savedMsgEl = document.getElementById('rsvp-saved-msg');
+      const textarea = document.getElementById('rsvp-message');
+
+      if (rsvpState.confirmed) {
+        formArea.classList.add('hidden');
+        confirmedCard.classList.remove('hidden');
+        if (rsvpState.message) {
+          savedMsgEl.textContent = `Lời nhắn của Ngọc Hà: “${rsvpState.message}”`;
+          savedMsgEl.classList.remove('hidden');
+        } else {
+          savedMsgEl.classList.add('hidden');
+        }
+      } else {
+        formArea.classList.remove('hidden');
+        confirmedCard.classList.add('hidden');
+        textarea.value = rsvpState.message || '';
+      }
+    }
+
+    function confirmRSVP() {
+      const msg = document.getElementById('rsvp-message').value.trim();
+      rsvpState = { confirmed: true, message: msg };
+      saveJSON(STORAGE_KEYS.RSVP, rsvpState);
+      renderRSVP();
+      launchPetalsCelebration();
+      showToast('Ngọc Hà đã đồng ý! Hẹn gặp nhau 10:00 sáng 24/11 nhé ♥');
+    }
+
+    function resetRsvpEdit() {
+      rsvpState.confirmed = false;
+      renderRSVP();
+    }
+
+    function copyRsvpReply() {
+      const text = rsvpState.message
+        ? `Em đồng ý đi hẹn hò kỷ niệm 11 tháng cùng anh Mai Sơn nhé! Hẹn anh 10:00 sáng ngày 24/11 tại Quận 1 nha. Lời nhắn của em: "${rsvpState.message}" ♥`
+        : 'Em đồng ý đi hẹn hò kỷ niệm 11 tháng cùng anh Mai Sơn nhé! Hẹn anh 10:00 sáng ngày 24/11 tại Quận 1 nha! ♥';
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = text;
+      tempInput.style.position = 'fixed';
+      tempInput.style.opacity = '0';
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('Đã sao chép tin nhắn xác nhận, em dán gửi cho Mai Sơn nhé!');
+      } catch (e) {
+        showToast('Không thể sao chép tự động, em thử lại nhé.', 'error');
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    /* Hiệu ứng cánh hoa rơi lãng mạn bằng HTML5 Canvas */
+    function launchPetalsCelebration() {
+      const canvas = document.getElementById('celebration-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#C88A7D', '#E8C5BD', '#FAF6F0', '#4F664E', '#DFB0A6'];
+      const particles = Array.from({ length: 85 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * 280,
+        size: 6 + Math.random() * 8,
+        speedY: 1.4 + Math.random() * 2.4,
+        speedX: (Math.random() - 0.5) * 1.4,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.08,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        opacity: 0.78 + Math.random() * 0.22
+      }));
+
+      let frames = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+
+        particles.forEach((p) => {
+          p.y += p.speedY;
+          p.x += p.speedX + Math.sin(p.y * 0.015) * 0.75;
+          p.angle += p.spin;
+          if (frames > 160) p.opacity = Math.max(0, p.opacity - 0.012);
+
+          if (p.y < canvas.height + 30 && p.opacity > 0.01) {
+            active = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle);
+            ctx.globalAlpha = p.opacity;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.52, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        });
+
+        frames++;
+        if (active && frames < 300) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    /* -----------------------------------------------------------
+       9. KHỞI TẠO TOÀN BỘ ỨNG DỤNG
+    ----------------------------------------------------------- */
+    window.addEventListener('DOMContentLoaded', () => {
+      initScrollReveal();
+      initCountdown();
+      renderTimeline();
+      initCheckinStudio();
+      renderRSVP();
+    });
+
+    window.addEventListener('resize', () => {
+      const canvas = document.getElementById('celebration-canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
